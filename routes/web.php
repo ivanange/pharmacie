@@ -14,3 +14,20 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*
+
+Route::get('/json', function () {
+    return response()->json([
+        'name' => 'Abigail',
+        'state' => 'CA'
+    ]);
+});
+
+*/
+
+Route::resources([
+    'categories' => 'CategoryController',
+    'products' => 'ProductController',
+    'commands' => 'CommandController',
+]);
