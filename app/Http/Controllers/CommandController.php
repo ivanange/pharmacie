@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Command;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class CommandController extends Controller
      */
     public function index()
     {
-        //
+       //
     }
 
     /**

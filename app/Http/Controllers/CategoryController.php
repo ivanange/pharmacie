@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Nullable;
 
 class CategoryController extends Controller
 {
@@ -14,7 +15,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $data = array(); /* va contenir les donnees de la table catégories dans la base*/
+        $categories = Category::all(); /*va aller recuperer les donnees de la table categories de la base*/
+        $data["categories"] =$categories; /* contient les informations qu'on est allées chercher  */
+
+        return view('index', $data); /*on affiche toutes les categories dans la page index*/
     }
 
     /**
@@ -34,8 +39,22 @@ class CategoryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
+    {   /*on valide la création ( on récupère les données entrer dans le formulaire) */
+        $request = $request->validate([
+            "name"=>"required|string|max:500",
+            "desc"=>"nullable|string|max:1500"
+            ]);
+
+            /*on crée une nouvelle catégorie dont le nom et la description seront vide
+            et à partir de la variable request on la remplie avec les infos recuperees*/
+
+            $new_category = new Category();
+
+            $new_category->fill($request->all());
+
+            $new_category->save();
+
+
     }
 
     /**
@@ -69,7 +88,13 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $request = $request->validate([
+            "name"=>"required|string|max:500",
+            "desc"=>"nullable|string|max:1500"
+            ]);
+
+        $category->fill($request->all());
+        $category->save();
     }
 
     /**
@@ -80,6 +105,6 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
     }
 }
