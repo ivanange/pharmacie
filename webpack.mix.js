@@ -11,6 +11,6 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.browserSync('pharmacy.dev');
-mix.js('resources/js/app.js', 'public/js')
+mix.browserSync('pharmacy:80');
+mix.disableSuccessNotifications().js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css');

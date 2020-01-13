@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     public $timestamps = false;
+    protected $fillable = ['name', 'manufacturer', 'weight', 'price', 'qte', 'expireDate', 'category_id'];
 
     public function category()
     {
@@ -15,6 +16,16 @@ class Product extends Model
 
     public function commands()
     {
-        return $this->belongsToMany('App\Command')->as('article')->withPivot('id', 'qte');
+        return $this->belongsToMany('App\Command', 'articles')->as('article')->withPivot('id', 'qte');
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->attributes['total'] == $this->total();
+    }
+
+    public function total()
+    {
+        return $this->price * $this->article->qte;
     }
 }

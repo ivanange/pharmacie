@@ -1,5 +1,8 @@
 <?php
 
+use App\Category;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +18,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::resources([
+    'categories' => 'CategoryController',
+    'products' => 'ProductController',
+    'commands' => 'CommandController',
+]);
+
 /*
 
 Route::get('/json', function () {
@@ -24,10 +33,15 @@ Route::get('/json', function () {
     ]);
 });
 
-*/
+Route::get('/test', function () {
+    $cat = new Category;
+    $cat2 = new Category;
+    $cat->fill(['name' => 'my cat', 'desc' => 'some description']);
 
-Route::resources([
-    'categories' => 'CategoryController',
-    'products' => 'ProductController',
-    'commands' => 'CommandController',
-]);
+    $cat2->id = $cat->id;
+    $cat2->name = "cat2";
+    $cat2->save();
+});
+
+
+*/

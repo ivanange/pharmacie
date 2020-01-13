@@ -1,32 +1,51 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+require('es7-object-polyfill');
+import Vue from 'vue';
+import VueResource from 'vue-resource';
+import VueRouter from 'vue-router';
+import BootstrapVue from 'bootstrap-vue';
+import {
+    Datetime
+} from 'vue-datetime'
+import 'vue-datetime/dist/vue-datetime.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-require('./bootstrap');
+Vue.use(BootstrapVue);
+Vue.use(VueResource);
+Vue.use(VueRouter);
+Vue.component('datetime', Datetime);
+//Vue.use(Datetime)
 
-window.Vue = require('vue');
+Vue.config.productionTip = false;
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+Vue.http.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+Vue.http.headers.common['Accept'] = 'application/json';
+Vue.http.headers.common['Content-Type'] = 'application/json';
 
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+import StoreCommand from "./components/commands/StoreCommand";
+const routes = [{
+    path: '/commands/create',
+    component: StoreCommand
+}];
 
-const app = new Vue({
+const router = new VueRouter({
+    mode: 'history',
+    routes: routes, // short for `routes: routes`
+});
+
+Vue.mixin({
+    methods: {
+        goback: function () {
+            window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/');
+        }
+    }
+});
+
+const vm = new Vue({
+    router,
     el: '#app',
 });
+
+window.vm = vm;
