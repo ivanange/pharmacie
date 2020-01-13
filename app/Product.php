@@ -8,6 +8,7 @@ class Product extends Model
 {
     public $timestamps = false;
     protected $fillable = ['name', 'manufacturer', 'weight', 'price', 'qte', 'expireDate', 'category_id'];
+    public $table = "products";
 
     public function category()
     {

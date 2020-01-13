@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Command;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreCommand;
@@ -17,6 +18,7 @@ class CommandController extends Controller
     {
         $commands = Command::with('products')->get();
         return $request->json ?? false ? $commands->toJson() : view('commands.list', ["commands" => $commands]);
+        //
     }
 
     /**
