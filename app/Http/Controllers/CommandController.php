@@ -17,7 +17,7 @@ class CommandController extends Controller
     public function index(Request $request)
     {
         $commands = Command::with('products')->get();
-        return $request->json ?? false ? $commands->toJson() : view('commands.list', ["commands" => $commands]);
+        return $request->json ?? false ? $commands->toJson() : view('commands.index', ["commands" => $commands]);
         //
     }
 
@@ -41,7 +41,7 @@ class CommandController extends Controller
     {
 
         $validated = $request->validated();
-        $issueDate = gmdate("Y-m-d H:i:s");
+        $issueDate = gmdate("Y-m-d H:i:s", strtotime('-1 minute'));
         $request->validate([
             'deliveryDate' => 'nullable|after_or_equal:' . $issueDate,
         ]);

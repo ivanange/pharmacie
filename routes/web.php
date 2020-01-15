@@ -1,6 +1,6 @@
 <?php
 
-use App\Category;
+use App\Command;
 
 
 /*
@@ -24,15 +24,14 @@ Route::resources([
     'commands' => 'CommandController',
 ]);
 
-/*
+
 
 Route::get('/json', function () {
-    return response()->json([
-        'name' => 'Abigail',
-        'state' => 'CA'
-    ]);
+    $data = Command::with('products')->get();
+    return $data->toJson();
 });
 
+/*
 Route::get('/test', function () {
     $cat = new Category;
     $cat2 = new Category;

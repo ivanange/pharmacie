@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Command;
+use App\Product;
+use Illuminate\Http\Request;
 
 class StoreCommand extends FormRequest
 {
@@ -32,14 +34,30 @@ class StoreCommand extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
             'name' => 'nullable|string|max:500',
             //'issueDate' => 'sometimes|nullable|date',
-            'deliveryDate' => 'sometimes|nullable|date',
             'status' => 'sometimes|in:' . Command::ENCOURS . ',' . Command::LIVRER . ',' . Command::ANNULER, // use reflection
-            'articles.*.qte' => 'integer'
+            'deliveryDate' => 'required_if:status,' . Command::LIVRER . '|nullable|date',
+            'articles.*.qte' => 'integer',
+            'article' => [
+                function ($attribute, $value, $fail) {
+                    // get models check their quantity
+                    $products  = Product::whereIn(array_keys($value));
+                    foreach ($products as $product) {
+                        if ($product->qte < $value[$product->id]['qte']) {
+                            $fail('In ' . $attribute . ' ' . $product->name . "'s quantity is greater than available stock");
+                        }
+                    }
+
+                    foreach ($products as $product) {
+                        $product->qte -= $value[$product->id]['qte'];
+                        $product->save();
+                    }
+                },
+            ],
 
         ];
     }

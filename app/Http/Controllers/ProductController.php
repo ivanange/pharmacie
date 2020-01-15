@@ -12,13 +12,13 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $data = array(); /* va contenir les donnees de la table produits dans la base*/
-        $products = Product::with("category"); /*va aller recuperer les donnees de la table produits de la base*/
-        $data["products"] =$products; /* contient les informations qu'on est allées chercher  */
+        $products = Product::with("category")->get(); /*va aller recuperer les donnees de la table produits de la base*/
+        $data["products"] = $products; /* contient les informations qu'on est allées chercher  */
 
-        return view('index', $data); /*on affiche toutes les categories dans la page index*/
+        return $request->json ?? false ? $products->toJson() : view('products.index', $data); /*on affiche toutes les categories dans la page index*/
     }
 
     /**
@@ -28,7 +28,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('products.create');
     }
 
     /**
@@ -41,26 +41,26 @@ class ProductController extends Controller
     {
         /*on valide la création ( on récupère les données entrer dans le formulaire) */
         $request = $request->validate([
-            "name"=>"required|string|max:500",
-            "manufacturer"=>"required|string|max:500",
-            "weight"=>"sometimes|numeric",
-            "price"=>"required|numeric",
-            "qte"=>"required|integer",
-            "expireDate"=>"required|dateTime",
-            "category_id"=>"required|exists:categories,id"
+            "name" => "required|string|max:500",
+            "manufacturer" => "required|string|max:500",
+            "weight" => "sometimes|numeric",
+            "price" => "required|numeric",
+            "qte" => "required|integer",
+            "expireDate" => "required|dateTime",
+            "category_id" => "required|exists:categories,id"
 
-            ]);
+        ]);
 
         /*on crée une nouvelle catégorie dont le nom et la description seront vide
             et à partir de la variable request on la remplie avec les infos recuperees*/
 
-        $new_product = new Product();
+        $product = new Product();
 
-        $new_product->fill($request->all());
+        $product->fill($request->all());
 
-        $new_product->save();
+        $product->save();
 
-
+        return $request->json ?? false ? $product->toJson() : redirect('/products');
     }
 
     /**
@@ -69,9 +69,9 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Product $product, Request $request)
     {
-        //
+        return $request->json ?? false ? $product->toJson() : view('products.show', ["product" => $product]);
     }
 
     /**
@@ -82,7 +82,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('products.edit', ["product" => $product]);
     }
 
     /**
@@ -95,18 +95,20 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request = $request->validate([
-            "name"=>"required|string|max:500",
-            "manufacturer"=>"required|string|max:500",
-            "weight"=>"sometimes|numeric",
-            "price"=>"required|numeric",
-            "qte"=>"required|integer",
-            "expireDate"=>"required|dateTime",
-            "category_id"=>"required|exists:categories,id"
+            "name" => "required|string|max:500",
+            "manufacturer" => "required|string|max:500",
+            "weight" => "sometimes|numeric",
+            "price" => "required|numeric",
+            "qte" => "required|integer",
+            "expireDate" => "required|dateTime",
+            "category_id" => "required|exists:categories,id"
 
-            ]);
+        ]);
 
-            $product->fill($request->all());
-            $product->save();
+        $product->fill($request->all());
+        $product->save();
+
+        return $request->json ?? false ? $product->toJson() : redirect('/products');
     }
 
     /**
@@ -115,8 +117,9 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Product $product, Request $request)
     {
         $product->delete();
+        return $request->json ?? false ? response()->json() : redirect('/products');
     }
 }

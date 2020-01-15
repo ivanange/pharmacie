@@ -2,9 +2,8 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\User;
+use App\Category;
 use Faker\Generator as Faker;
-use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +16,9 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(Category::class, function (Faker $faker) {
     return [
-        'name' => $faker->userName,
-        'email' => $faker->unique()->safeEmail,
-        'email_verified_at' => now(),
-        'password' => bcrypt('password'), // password
-        'remember_token' => Str::random(10),
+        "name" => rtrim($faker->text($faker->numberBetween(20, 50)), "."),
+        "desc" => $faker->paragraphs($faker->numberBetween(2, 6), true),
     ];
 });

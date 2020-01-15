@@ -1,81 +1,15 @@
 <template>
   <div>
-    <b-form @submit.prevent="save" v-if="show" action="/commands" method="post">
-      <b-form-input
-        id="name"
-        v-model="command.name"
-        type="text"
-        placeholder="Optional command name"
-      ></b-form-input>
-
-      <datetime
-        id="issueDate"
-        type="datetime"
-        v-model="issueDateF"
-        title="Issue date"
-        placeholder="Issue date"
-        readonly
-      ></datetime>
-      <datetime
-        id="deliveryDate"
-        type="datetime"
-        v-model="command.deliveryDate"
-        title="Delivery date"
-        placeholder="Delivery date"
-      ></datetime>
-
-      <b-form-group label="Status">
-        <b-form-radio-group
-          variant="secondary"
-          v-model="command.status"
-          name="status"
-          class
-          :options="statuses"
-        ></b-form-radio-group>
-      </b-form-group>
-
-      <b-form-group
-        label="Articles"
-        id="articles"
-        v-if="Object.values(this.command.articles).length"
-      >
-        <Article
+    
+<div class="articles">
+            <Article
           v-for="article in Object.values(this.command.articles)"
           :article="article"
           :key="article.product.id"
-          @remove="remove($event)"
+          :deleteButton="false"
         />
-      </b-form-group>
-
-      <b-input-group prepend="Add article" @keyup.enter.stop="add">
-        <b-input-group-prepend>
-          <v-select
-            v-model="article.product"
-            :options="productlist"
-            :reduce="selected => selected.value"
-            placeholder="Product"
-            class="my-0 py-0 custom"
-            style="min-width: 400px;"
-          ></v-select>
-        </b-input-group-prepend>
-        <b-form-input
-          class="my-0 py-0"
-          id="quantity"
-          v-model="qte"
-          type="number"
-          min="1"
-          :max="max"
-          placeholder="Qte"
-          style="max-width:100px;"
-        ></b-form-input>
-
-        <b-input-group-append>
-          <b-button variant="primary" class="my-0 py-0" @click.stop="add">Add</b-button>
-        </b-input-group-append>
-      </b-input-group>
-
-      <b-button type="submit" variant="primary">Save</b-button>
-    </b-form>
+</div>
+     
   </div>
 </template>
 

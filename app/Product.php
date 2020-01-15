@@ -9,6 +9,7 @@ class Product extends Model
     public $timestamps = false;
     protected $fillable = ['name', 'manufacturer', 'weight', 'price', 'qte', 'expireDate', 'category_id'];
     public $table = "products";
+    //protected $appends = ['total'];
 
     public function category()
     {
@@ -22,11 +23,13 @@ class Product extends Model
 
     public function getTotalAttribute()
     {
-        return $this->attributes['total'] == $this->total();
+        return $this->total();
     }
 
     public function total()
     {
-        return $this->price * $this->article->qte;
+        return ($this->article ?? false) ?
+            $this->price * $this->article->qte :
+            null;
     }
 }

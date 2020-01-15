@@ -13,13 +13,13 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $data = array(); /* va contenir les donnees de la table catégories dans la base*/
         $categories = Category::all(); /*va aller recuperer les donnees de la table categories de la base*/
-        $data["categories"] =$categories; /* contient les informations qu'on est allées chercher  */
+        $data["categories"] = $categories; /* contient les informations qu'on est allées chercher  */
 
-        return view('index', $data); /*on affiche toutes les categories dans la page index*/
+        return $request->json ?? false ? $categories->toJson() : view('categories.index', $data); /*on affiche toutes les categories dans la page index*/
     }
 
     /**
@@ -29,7 +29,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -41,20 +41,20 @@ class CategoryController extends Controller
     public function store(Request $request)
     {   /*on valide la création ( on récupère les données entrer dans le formulaire) */
         $request = $request->validate([
-            "name"=>"required|string|max:500",
-            "desc"=>"nullable|string|max:1500"
-            ]);
+            "name" => "required|string|max:500",
+            "desc" => "nullable|string|max:1500"
+        ]);
 
-            /*on crée une nouvelle catégorie dont le nom et la description seront vide
+        /*on crée une nouvelle catégorie dont le nom et la description seront vide
             et à partir de la variable request on la remplie avec les infos recuperees*/
 
-            $new_category = new Category();
+        $category = new Category();
 
-            $new_category->fill($request->all());
+        $category->fill($request->all());
 
-            $new_category->save();
+        $category->save();
 
-
+        return $request->json ?? false ? $category->toJson() : redirect('/categories');
     }
 
     /**
@@ -63,9 +63,9 @@ class CategoryController extends Controller
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Category $category, Request $request)
     {
-        //
+        return $request->json ?? false ? $category->toJson() : view('categories.show', ["category" => $category]);
     }
 
     /**
@@ -76,7 +76,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('categories.edit', ["category" => $category]);
     }
 
     /**
@@ -89,12 +89,14 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request = $request->validate([
-            "name"=>"required|string|max:500",
-            "desc"=>"nullable|string|max:1500"
-            ]);
+            "name" => "required|string|max:500",
+            "desc" => "nullable|string|max:1500"
+        ]);
 
         $category->fill($request->all());
         $category->save();
+
+        return $request->json ?? false ? $category->toJson() : redirect('/categories');
     }
 
     /**
@@ -103,8 +105,9 @@ class CategoryController extends Controller
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category, Request $request)
     {
         $category->delete();
+        return $request->json ?? false ? response()->json() : redirect('/categories');
     }
 }
