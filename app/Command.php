@@ -3,16 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Command extends Model
 {
+    use SoftDeletes;
 
     const ENCOURS = 1;
     const LIVRER = 2;
     const  ANNULER = 3;
     public $timestamps = false;
     protected $fillable = ['name', 'deliveryDate', 'status'];
-    protected $dates = ['issueDate', 'deliveryDate'];
+    //protected $dates = ['issueDate', 'deliveryDate'];
     protected $hidden = ['products'];
     protected $appends = ['total', 'articles'];
 

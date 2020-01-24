@@ -1,65 +1,84 @@
 <template>
-  <div>
+  <div
+    class="main-container d-flex justify-content-center align-items-center flex-column custom-scroll"
+  >
     <b-form @submit.prevent="save" v-if="show" action="/commands" method="post">
       <b-form-input
         id="name"
         v-model="command.name"
         type="text"
         placeholder="Optional command name"
+        class="my-2"
+        style="width: 400px; height: 40px;"
       ></b-form-input>
 
-      <datetime
-        id="issueDate"
-        type="datetime"
-        v-model="issueDateF"
-        title="Issue date"
-        placeholder="Issue date"
-        readonly
-      ></datetime>
-      <datetime
-        id="deliveryDate"
-        type="datetime"
-        v-model="command.deliveryDate"
-        title="Delivery date"
-        placeholder="Delivery date"
-      ></datetime>
+      <div class="d-flex">
+        <datetime
+          id="issueDate"
+          type="datetime"
+          v-model="issueDateF"
+          title="Issue date"
+          placeholder="Issue date"
+          readonly
+          input-class="border rounded my-2 mr-3 pl-1"
+          input-style="width: 200px; height: 40px;"
+        ></datetime>
+        <datetime
+          id="deliveryDate"
+          type="datetime"
+          v-model="command.deliveryDate"
+          title="Delivery date"
+          placeholder="Delivery date"
+          v-if="command.status != this.ENSTATUS.ONGOING"
+          input-class="border rounded my-2  pl-2"
+          input-style="width: 200px; height: 40px;"
+          :required="command.status != this.ENSTATUS.ONGOING"
+        ></datetime>
+      </div>
 
-      <b-form-group label="Status">
+      <b-form-group class="my-4" label-class="font-weight-bold text-secondary">
+        <label class="font-weight-bold text-secondary">
+          <h5 class="mb-0">Status</h5>
+        </label>
         <b-form-radio-group
           variant="secondary"
+          class="custom-radio"
           v-model="command.status"
           name="status"
-          class
           :options="statuses"
         ></b-form-radio-group>
       </b-form-group>
+      <div class="my-4">
+        <b-form-group id="articles" v-if="Object.values(this.command.articles).length">
+          <label class="font-weight-bold text-secondary mb-0">
+            <h5 class="mb-0">Articles</h5>
+          </label>
+          <ArticleWrapper :total="total">
+            <div class="custom-scroll overflow-auto" style="max-height: calc(100vh - 600px);">
+              <Article
+                v-for="article in Object.values(this.command.articles)"
+                :article="article"
+                :key="article.product.id"
+                @remove="remove($event)"
+              />
+            </div>
+          </ArticleWrapper>
+        </b-form-group>
+      </div>
 
-      <b-form-group
-        label="Articles"
-        id="articles"
-        v-if="Object.values(this.command.articles).length"
-      >
-        <Article
-          v-for="article in Object.values(this.command.articles)"
-          :article="article"
-          :key="article.product.id"
-          @remove="remove($event)"
-        />
-      </b-form-group>
-
-      <b-input-group prepend="Add article" @keyup.enter.stop="add">
+      <b-input-group prepend="Add article" @keyup.enter.stop="add" class="mt-3">
         <b-input-group-prepend>
           <v-select
             v-model="article.product"
-            :options="productlist"
+            :options="productOptionlist"
             :reduce="selected => selected.value"
             placeholder="Product"
-            class="my-0 py-0 custom"
-            style="min-width: 400px;"
+            class="custom"
+            style="min-width: 300px;"
           ></v-select>
         </b-input-group-prepend>
         <b-form-input
-          class="my-0 py-0"
+          class
           id="quantity"
           v-model="qte"
           type="number"
@@ -70,23 +89,27 @@
         ></b-form-input>
 
         <b-input-group-append>
-          <b-button variant="primary" class="my-0 py-0" @click.stop="add">Add</b-button>
+          <b-button variant="info" class="my-0 py-0" @click.stop="add">Add</b-button>
         </b-input-group-append>
       </b-input-group>
 
-      <b-button type="submit" variant="primary">Save</b-button>
+      <div class="d-flex justify-content-end mt-4 mb-5">
+        <b-button type="submit" class="mr-2" variant="info" style="min-width:70px;">Save</b-button>
+      </div>
     </b-form>
   </div>
 </template>
 
 <script>
 import Article from "./Article";
+import ArticleWrapper from "./ArticleWrapper";
 import { DateTime } from "luxon";
 
 export default {
   name: "StoreCommand",
   components: {
-    Article
+    Article,
+    ArticleWrapper
   },
   props: {
     id: {
@@ -100,7 +123,7 @@ export default {
           id: null,
           name: "",
           issueDate: DateTime.utc().toISO(),
-          deliveryDate: null,
+          deliveryDate: DateTime.utc().toISO(),
           status: 1,
           articles: {}
         };
@@ -109,14 +132,23 @@ export default {
   },
   data: function() {
     return {
-      article: { product: {}, qte: null },
-      products: {},
+      article: { product: {}, qte: 1 },
       command: this.propCommand,
       show: true,
-      edit: false
+      edit: false,
+      setup: false
     };
   },
   computed: {
+    total: function() {
+      return Object.values(this.command.articles)
+        .reduce(
+          (acc, val) =>
+            (acc += parseInt(val.product.price) * parseInt(val.qte)),
+          0
+        )
+        .toFixed(2);
+    },
     issueDateF: {
       get: function() {
         return this.command.issueDate;
@@ -125,11 +157,11 @@ export default {
         return;
       }
     },
-    productlist: {
+    productOptionlist: {
       get: function() {
-        return Object.values(this.products).map(el => ({
+        return this.availableProductsList.map(el => ({
           value: el,
-          label: `${el.name} : ${el.price}`
+          label: `${el.name} : ${el.price} ${this.currency}`
         }));
       },
       set: function(val) {
@@ -148,43 +180,31 @@ export default {
     },
     max: function() {
       return this.hasActiveProduct()
-        ? this.products[this.article.product.id].qte
-        : 0;
-    },
-    statuses: function() {
-      return Object.keys(this.STATUS).map(el => ({
-        text: (el[0] + el.substr(1).toLowerCase()).replace(/er$/, "é"),
-        value: this.STATUS[el]
-      }));
+        ? this.$store.state.products[this.article.product.id].qte
+        : 1;
     }
   },
   methods: {
     add() {
-      if (this.article.product && this.article.qte) {
-        this.command.articles[this.article.product.id] = {
+      if (Object.values(this.article.product).length && this.article.qte) {
+        this.$set(this.command.articles, this.article.product.id, {
           product: this.article.product,
           qte: this.article.qte
-        };
-        this.article = { product: {}, qte: null };
+        });
+        this.article = { product: {}, qte: 1 };
       }
     },
     hasActiveProduct() {
-      return Object.keys(this.article.product).length;
+      return Object.keys(this.article.product || {}).length;
     },
     remove(id) {
-      delete this.command.articles[id];
-      this.$forceUpdate();
+      this.$delete(this.command.articles, id);
     },
     save() {
       if (this.validate()) {
         let data = this.serialize();
-        console.log(data);
-        this.$http[this.method](this.url, data)
-          .then(data => {
-            console.log(data);
-            //this.command = data.body;
-          })
-          .catch(e => console.log(e));
+        this[this.action](data);
+        this.$emit("saved");
       }
     },
     validate() {
@@ -207,56 +227,49 @@ export default {
     },
     setupDates() {
       if (this.edit) {
-        this.command.issueDate = DateTime.fromFormat(
-          this.command.issueDate,
-          "yyyy-MM-dd HH:mm:ss",
-          { zone: "UTC" }
-        ).toISO();
+        this.command.issueDate = this.command.issueDate
+          ? this.setupDate(this.command.issueDate).toISO()
+          : "";
 
         this.command.deliveryDate = this.command.deliveryDate
-          ? DateTime.fromFormat(
-              this.command.deliveryDate,
-              "yyyy-MM-dd HH:mm:ss",
-              { zone: "UTC" }
-            ).toISO()
-          : null;
+          ? this.setupDate(this.command.deliveryDate).toISO()
+          : "";
       }
     },
-    init() {
-      if (this.id) {
-        this.edit = true;
-        this.$http
-          .get(`/api/commands/${this.id}`)
-          .then(data => {
-            this.command = data.body;
-            this.setupDates();
-          })
-          .catch(e => console.log(e));
+    setupCommand() {
+      if (!this.setup) {
+        let command = this.getCommand(this.id);
+        if (command) {
+          this.command = command || this.command;
+          this.setupDates();
+          this.setup = true;
+        }
+        return command;
       }
-      this.$http
-        .get("/api/products")
-        .then(
-          res =>
-            (this.products = res.body.reduce((acc, val) => {
-              acc[val.id] = val;
-              return acc;
-            }, {}))
-        )
-        .catch(e => console.log(e));
-
-      this.url = this.edit ? `/api/commands/${this.id}` : `/api/commands`;
-      this.method = this.edit ? "put" : "post";
     }
   },
+
   created: function() {
-    this.init();
+    if (this.id || this.propCommand.id) {
+      this.edit = true;
+      this.$store.watch(
+        (state, getters) => state.loaded,
+        () => {
+          if (this.loaded && !this.propCommand.id) {
+            if (this.setupCommand()) {
+            } else {
+              this.$router.push("/commands");
+            }
+          }
+        },
+        { immediate: true, deep: true }
+      );
+      this.setupCommand();
+    }
+    this.action = (this.edit ? "update" : "create") + "Command";
   }
 };
 </script>
 
-<style lang="scss" >
-.custom .vs__dropdown-toggle {
-  height: 100%;
-  border-radius: 0px;
-}
+<style lang="scss" scoped>
 </style>

@@ -2,16 +2,27 @@ require('es7-object-polyfill');
 import Vue from 'vue';
 import VueResource from 'vue-resource';
 import VueRouter from 'vue-router';
+import Vuex from 'vuex';
+import VuexPersist from 'vuex-persist';
 import BootstrapVue from 'bootstrap-vue';
 import vSelect from 'vue-select';
 import Datetime from 'vue-datetime';
+import VuePageTitle from 'vue-page-title'
+import {
+    DateTime as LuxonDateTime,
+    Settings
+} from "luxon";
 import {
     library
 } from '@fortawesome/fontawesome-svg-core';
 import {
-    faUserSecret,
-    faMinusCircle
+    faMinusCircle,
+    faPlusCircle,
+    faPencilAlt
 } from '@fortawesome/free-solid-svg-icons';
+import {
+    faTrashAlt
+} from '@fortawesome/free-regular-svg-icons'
 import {
     FontAwesomeIcon
 } from '@fortawesome/vue-fontawesome';
@@ -20,93 +31,118 @@ import 'vue-select/dist/vue-select.css';
 import 'vue-datetime/dist/vue-datetime.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import {
-    Settings
-} from 'luxon';
 
+import {
+    routes
+} from './routes';
+import {
+    stateMap,
+    state,
+    actions
+} from './store';
+
+import Navbar from "./components/Navbar";
 
 library.add(
-    faUserSecret,
-    faMinusCircle
+    faMinusCircle,
+    faPlusCircle,
+    faTrashAlt,
+    faPencilAlt
 );
 
+// setup global config
+Vue.config.productionTip = false;
+Vue.http.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+Vue.http.headers.common['Accept'] = 'application/json';
+Vue.http.headers.common['Content-Type'] = 'application/json';
+Settings.defaultLocale = "en";
+
+// setup vue plugins and components
+Vue.use(Vuex)
 Vue.use(BootstrapVue);
 Vue.use(VueResource);
 Vue.use(VueRouter);
 Vue.use(Datetime)
+Vue.use(VuePageTitle, {
+    prefix: 'Pharma | ',
+});
 Vue.component('v-select', vSelect);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
+Vue.component('Navbar', Navbar);
 
-Vue.config.productionTip = false;
-
-Vue.http.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-Vue.http.headers.common['Accept'] = 'application/json';
-Vue.http.headers.common['Content-Type'] = 'application/json';
-
-
-
-import StoreCommand from "./components/commands/StoreCommand";
-const routes = [{
-        path: '/commands/create',
-        component: StoreCommand
+// setup global data and methods
+Vue.mixin({
+    computed: {
+        ...stateMap,
+        statuses: function () {
+            return Object.keys(this.STATUS).map(el => ({
+                text: (el[0] + el.substr(1).toLowerCase()).replace(/er$/, "é"),
+                value: this.STATUS[el]
+            }));
+        }
     },
-    {
-        path: '/commands/:id/edit',
-        component: StoreCommand,
-        props: true
-    }
-];
+
+    methods: {
+        ...actions,
+        goback: function () {
+            window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/');
+        },
+        getStatusText: function (code) {
+            for (let [key, value] of Object.entries(this.STATUS)) {
+                if (value == code) {
+                    return (key[0] + key.substr(1).toLowerCase()).replace(/er$/, "é");
+                }
+            }
+            console.log("should not reach here");
+        },
+        setupDate(date) {
+            return LuxonDateTime.fromFormat(
+                date,
+                "yyyy-MM-dd HH:mm:ss", {
+                    zone: "UTC"
+                }
+            );
+        }
+    },
+
+});
 
 const router = new VueRouter({
     mode: 'history',
-    routes: routes, // short for `routes: routes`
+    routes: routes,
 });
 
-Vue.mixin({
+const vuexLocalStorage = new VuexPersist({
+    key: 'vuex',
+    storage: window.localStorage,
+})
+
+const store = new Vuex.Store({
+    ...state,
+    plugins: [vuexLocalStorage.plugin],
+});
+
+const vm = new Vue({
+    store,
+    router,
+    el: '#app',
+    components: {
+        Navbar
+    },
     data: function () {
         return {
-            lang: "en",
-            LuxonSettings: Settings,
-            FRSTATUS: {
-                ENCOURS: 1,
-                LIVRER: 2,
-                ANNULER: 3
-            },
-            ENSTATUS: {
-                ONGOING: 1,
-                DELIVERED: 2,
-                ABORTED: 3
-            },
-        }
-    },
-    computed: {
-        STATUS: function () {
-            return this[this.lang.toUpperCase() + "STATUS"];
-        }
+            title: "Home"
+        };
     },
     watch: {
         lang: function () {
             this.updateLocal();
-            this.$forceUpdate();
         }
     },
-    methods: {
-        goback: function () {
-            window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/');
-        },
-        updateLocal: function () {
-            this.LuxonSettings.defaultLocale = this.lang;
-        }
-    },
+    methods: {},
     created: function () {
-        this.updateLocal();
+        this.fetchCommands();
+        this.fetchProducts();
+        this.fetchCategories();
     }
-
 });
-
-const vm = new Vue({
-    router,
-    el: '#app',
-});
-
-window.vm = vm;

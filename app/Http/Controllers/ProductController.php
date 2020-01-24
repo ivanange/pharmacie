@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -40,16 +41,17 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         /*on valide la création ( on récupère les données entrer dans le formulaire) */
-        $request = $request->validate([
+        $request->validate([
             "name" => "required|string|max:500",
             "manufacturer" => "required|string|max:500",
             "weight" => "sometimes|numeric",
             "price" => "required|numeric",
             "qte" => "required|integer",
-            "expireDate" => "required|dateTime",
-            "category_id" => "required|exists:categories,id"
+            "expireDate" => "nullable|date",
+            "category_id" => "nullable|exists:categories,id"
 
         ]);
+
 
         /*on crée une nouvelle catégorie dont le nom et la description seront vide
             et à partir de la variable request on la remplie avec les infos recuperees*/
@@ -57,7 +59,8 @@ class ProductController extends Controller
         $product = new Product();
 
         $product->fill($request->all());
-
+        $product->image = $this->createImageFromBase64($request);
+        $product->expireDate = date("Y-m-d H:i:s", strtotime($product->expireDate));
         $product->save();
 
         return $request->json ?? false ? $product->toJson() : redirect('/products');
@@ -94,18 +97,20 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $request = $request->validate([
+        $request->validate([
             "name" => "required|string|max:500",
             "manufacturer" => "required|string|max:500",
             "weight" => "sometimes|numeric",
             "price" => "required|numeric",
             "qte" => "required|integer",
-            "expireDate" => "required|dateTime",
-            "category_id" => "required|exists:categories,id"
+            "expireDate" => "nullable|date",
+            "category_id" => "nullable|exists:categories,id"
 
         ]);
 
         $product->fill($request->all());
+        $product->image = $this->createImageFromBase64($request);
+        $product->expireDate = date("Y-m-d H:i:s", strtotime($product->expireDate));
         $product->save();
 
         return $request->json ?? false ? $product->toJson() : redirect('/products');
@@ -121,5 +126,21 @@ class ProductController extends Controller
     {
         $product->delete();
         return $request->json ?? false ? response()->json() : redirect('/products');
+    }
+
+    public function createImageFromBase64(Request $request)
+    {
+
+        $file_data = $request->image;
+        //generating unique file name;
+        $file_name = 'image_' . time() . '.png';
+        //@list($type, $file_data) = explode(';', $file_data);
+        //@list(, $file_data)      = explode(',', $file_data);
+        if ($file_data) {
+            // storing image in storage/app/public Folder
+            Storage::disk('public')->put('images/' . $file_name, base64_decode($file_data));
+            return $file_name;
+        }
+        return null;
     }
 }

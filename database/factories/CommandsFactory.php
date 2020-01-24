@@ -17,11 +17,14 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(Command::class, function (Faker $faker) {
-    $issueDate = $faker->dateTimeThisMonth;
+    $statuses = [Command::LIVRER, Command::ANNULER, Command::ENCOURS,];
+    $issueDate = $faker->dateTimeThisMonth('now', 'utc');
+    $status = $faker->randomElement($statuses);
+    array_pop($statuses);
     return [
-        'name' => rtrim($faker->text($faker->numberBetween(10, 50)), "."),
+        'name' => $faker->boolean(40) ? $faker->name :  null,
         'issueDate' => $issueDate,
-        'deliveryDate' => $faker->dateTimeBetween($issueDate, "+2 months"),
-        'status' => $faker->randomElement([Command::ENCOURS, Command::LIVRER, Command::ANNULER]),
+        'deliveryDate' => in_array($status, $statuses) ? $faker->dateTimeBetween($issueDate, "+1 month", 'utc') : null,
+        'status' => $status,
     ];
 });

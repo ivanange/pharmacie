@@ -14,7 +14,7 @@ class CategoriesTableSeeder extends Seeder
     {
         factory(App\Category::class, 20)->create()->each(function ($category)  use ($faker) {
             $category->products()->createMany(
-                factory(App\Product::class, $faker->numberBetween(10, 25))->make()->toArray()
+                factory(App\Product::class, $faker->numberBetween(5, 20))->make()->toArray()
             );
         });
     }

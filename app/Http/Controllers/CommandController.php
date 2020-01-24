@@ -40,8 +40,8 @@ class CommandController extends Controller
     public function store(StoreCommand $request)
     {
 
-        $validated = $request->validated();
-        $issueDate = gmdate("Y-m-d H:i:s", strtotime('-1 minute'));
+        $request->validated();
+        $issueDate = gmdate("Y-m-d H:i:s", strtotime('-2 minutes'));
         $request->validate([
             'deliveryDate' => 'nullable|after_or_equal:' . $issueDate,
         ]);
@@ -86,10 +86,11 @@ class CommandController extends Controller
      */
     public function update(StoreCommand $request, Command $command)
     {
+
         $request->validate([
             'deliveryDate' => 'nullable|after_or_equal:' . $command->issueDate,
         ]);
-        $validated = $request->validated();
+        $request->validated();
         $command->fill($request->all());
         $command->save();
         $command->products()->sync((array) $request->articles ?? []);
@@ -128,7 +129,7 @@ class CommandController extends Controller
 
     public function restore(Request $request)
     {
-        $restored = Command::onlyTrashed()->whereIn($request->recycle)->restore();
+        $restored = Command::onlyTrashed()->whereIn('id', $request->recycle)->restore();
         return $request->json ?? false ? response()->json(["restored" => $restored ? "Ok" : "Error"]) : redirect('/commands');
     }
 
@@ -140,7 +141,7 @@ class CommandController extends Controller
 
     public function delete(Request $request)
     {
-        $deleted = Command::onlyTrashed()->whereIn($request->recycle)->forceDelete();
+        $deleted = Command::onlyTrashed()->whereIn('id', $request->recycle)->forceDelete();
         return $request->json ?? false ? response()->json(["deleted" => $deleted ? "OK" : "Error"]) : redirect('/commands');
     }
 }

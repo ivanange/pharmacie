@@ -23,9 +23,11 @@ class StoreCommand extends FormRequest
     {
 
         if ($this->deliveryDate ?? false) {
-            $this->merge([
-                'deliveryDate' =>  date("Y-m-d H:i:s", strtotime($this->deliveryDate))
-            ]);
+            if (($this->status ?? 1) == Command::ENCOURS) {
+                $this['deliveryDate'] =  null;
+            } else {
+                $this['deliveryDate'] =  date("Y-m-d H:i:s", strtotime($this['deliveryDate']));
+            }
         }
     }
 
@@ -34,13 +36,12 @@ class StoreCommand extends FormRequest
      *
      * @return array
      */
-    public function rules(Request $request)
+    public function rules()
     {
         return [
             'name' => 'nullable|string|max:500',
-            //'issueDate' => 'sometimes|nullable|date',
             'status' => 'sometimes|in:' . Command::ENCOURS . ',' . Command::LIVRER . ',' . Command::ANNULER, // use reflection
-            'deliveryDate' => 'required_if:status,' . Command::LIVRER . '|nullable|date',
+            'deliveryDate' => 'required_if:status,' . Command::LIVRER . ',' . Command::ANNULER . '|nullable|date',
             'articles.*.qte' => 'integer',
             'article' => [
                 function ($attribute, $value, $fail) {

@@ -16,9 +16,11 @@ use Faker\Generator as Faker;
 |
 */
 
+
+
 $factory->define(Category::class, function (Faker $faker) {
     return [
-        "name" => rtrim($faker->text($faker->numberBetween(20, 50)), "."),
-        "desc" => $faker->paragraphs($faker->numberBetween(2, 6), true),
+        "name" => rtrim($faker->text($faker->numberBetween(10, 30)), "."),
+        "desc" => $faker->boolean(70) ? $faker->sentence : null,
     ];
 });

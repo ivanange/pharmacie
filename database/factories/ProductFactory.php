@@ -17,13 +17,20 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(Product::class, function (Faker $faker) {
+    $faker = \Faker\Factory::create();
+    $faker->addProvider(new \Bezhanov\Faker\Provider\Medicine($faker));
     return  [
-        "name" => rtrim($faker->text($faker->numberBetween(5, 15)), "."),
+        "name" => $faker->medicine,
         "manufacturer" => $faker->company,
-        "weight" => $faker->randomFloat(2, 1, 100000),
-        "price" => $faker->randomFloat(2, 1, 100000),
-        "qte" => $faker->numberBetween(5, 105),
-        "expireDate" => $faker->dateTimeThisYear,
+        //"image" => $faker->boolean ? $faker->image('public/storage/images', 640, 480, null, false) : null,
+        "weight" => $faker->randomFloat(2, 200, 1000),
+        "price" => $faker->randomFloat(2, 1, 10000),
+        "qte" => $faker->numberBetween(5, 60),
+        "expireDate" => $faker->dateTimeBetween(
+            $faker->randomElement(['now', '-1 month']),
+            $faker->randomElement(['+5 monthsr', 'now', '+1 month']),
+            'utc'
+        ),
     ];
 });
 
