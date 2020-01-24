@@ -16,7 +16,24 @@ import EditProduct from "./components/EditProduct";
 import ShowProduct from "./components/ShowProduct";
 import ProductSidebar from "./components/ProductSidebar";
 
+import Home from "./components/Home";
+import Login from "./components/Login";
+
 export const routes = [{
+        path: '/login',
+        name: 'Login',
+        components: {
+            default: Login,
+        },
+    },
+    {
+        path: '/home',
+        name: 'Home',
+        components: {
+            default: Home,
+        },
+    },
+    {
         path: '/commands',
         name: 'Command',
         components: {

@@ -44,6 +44,9 @@ export const state = {
         lang: "en",
         currency: "XAF",
         section: "Home",
+        login: "admin",
+        password: "admin",
+        logged: false,
         searchResult: [],
         loaded: false,
         loadCounter: 0,
@@ -103,7 +106,15 @@ export const state = {
         setList(state, searchResult) {
             state.searchResult = searchResult;
         },
-
+        setPass(state, password) {
+            state.password = password;
+        },
+        setLogin(state, login) {
+            state.login = login;
+        },
+        setLogged(state, logged) {
+            state.logged = logged;
+        },
         // Commands
 
         addCommands(state, commands) {
@@ -322,6 +333,9 @@ export const stateMap = {
         "lang",
         "loaded",
         "currency",
+        "login",
+        "password",
+        "logged",
         "section",
         "searchResult",
         "expiryInterval",

@@ -112,6 +112,7 @@ const router = new VueRouter({
     routes: routes,
 });
 
+
 const vuexLocalStorage = new VuexPersist({
     key: 'vuex',
     storage: window.localStorage,
@@ -120,6 +121,26 @@ const vuexLocalStorage = new VuexPersist({
 const store = new Vuex.Store({
     ...state,
     plugins: [vuexLocalStorage.plugin],
+});
+
+router.beforeEach(function (to, from, next) {
+    let condition = to.path.indexOf("/login") == -1 && !store.state.logged;
+    console.log(condition);
+    if (condition) {
+        next("/login");
+    }
+    console.log(to);
+    if (to.path) {
+        if (to.path.indexOf("/commands") !== -1) {
+            store.commit("setList", store.getters.commandList);
+        } else if (to.path.indexOf("/products") !== -1) {
+            store.commit("setList", store.getters.productList);
+        } else if (to.path.indexOf("/categories") !== -1) {
+            store.commit("setList", store.getters.categoryList);
+        }
+    }
+    next();
+
 });
 
 const vm = new Vue({
