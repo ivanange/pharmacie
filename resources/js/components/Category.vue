@@ -17,7 +17,6 @@ export default {
   },
   data: function() {
     return {
-      title: "Categories"
     };
   },
   methods: {

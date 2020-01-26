@@ -124,20 +124,15 @@ const store = new Vuex.Store({
 });
 
 router.beforeEach(function (to, from, next) {
-    let condition = to.path.indexOf("/login") == -1 && !store.state.logged;
-    console.log(condition);
-    if (condition) {
+    if (to.path.indexOf("/login") == -1 && !store.state.logged) {
         next("/login");
     }
-    console.log(to);
-    if (to.path) {
-        if (to.path.indexOf("/commands") !== -1) {
-            store.commit("setList", store.getters.commandList);
-        } else if (to.path.indexOf("/products") !== -1) {
-            store.commit("setList", store.getters.productList);
-        } else if (to.path.indexOf("/categories") !== -1) {
-            store.commit("setList", store.getters.categoryList);
-        }
+    if (to.path.indexOf("/commands") !== -1) {
+        store.commit("setList", store.getters.commandList);
+    } else if (to.path.indexOf("/products") !== -1) {
+        store.commit("setList", store.getters.productList);
+    } else if (to.path.indexOf("/categories") !== -1) {
+        store.commit("setList", store.getters.categoryList);
     }
     next();
 
@@ -152,7 +147,7 @@ const vm = new Vue({
     },
     data: function () {
         return {
-            title: "Home"
+            categoryid: null
         };
     },
     watch: {
@@ -162,8 +157,19 @@ const vm = new Vue({
     },
     methods: {},
     created: function () {
-        this.fetchCommands();
-        this.fetchProducts();
-        this.fetchCategories();
+        this.$store.watch(
+            (state, getters) => state.logged,
+            () => {
+                if (this.logged) {
+                    this.fetchCommands();
+                    this.fetchProducts();
+                    this.fetchCategories();
+                }
+            }, {
+                immediate: true,
+                deep: true
+            }
+        );
+
     }
 });

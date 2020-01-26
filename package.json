@@ -35,6 +35,7 @@
         "es7-object-polyfill": "^1.0.1",
         "lodash.debounce": "^4.0.8",
         "luxon": "^1.21.3",
+        "print-js": "^1.0.63",
         "vue-datetime": "^1.0.0-beta.11",
         "vue-i18n": "^8.15.3",
         "vue-page-title": "^1.1.6",

@@ -34,6 +34,13 @@ export const routes = [{
         },
     },
     {
+        path: '/',
+        name: 'Home',
+        components: {
+            default: Home,
+        },
+    },
+    {
         path: '/commands',
         name: 'Command',
         components: {

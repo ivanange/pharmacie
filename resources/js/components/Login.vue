@@ -1,12 +1,12 @@
 <template>
-  <div class="d-flex justify-content-center align-content-center bg-light flex-column h-100">
+  <div class="d-flex justify-content-center align-items-center bg-light flex-column h-100">
     <h1 class="my-3 text-secondary display-3 w-auto mx-auto">PHARMA</h1>
     <b-form @submit.prevent="Log">
       <b-form-group
         class="mx-auto"
         label="Authenticate"
         label-class="text-center text-secondary lead"
-        style="width: 400px;"
+        style="width: 350px;"
       >
         <b-form-input
           id="name"
@@ -15,6 +15,7 @@
           required
           placeholder="Login"
           class="my-2"
+          size="lg"
         ></b-form-input>
 
         <b-form-input
@@ -24,7 +25,7 @@
           required
           placeholder="Password"
           class="my-2"
-          :is-valid="validate"
+          size="lg"
         ></b-form-input>
       </b-form-group>
 
@@ -46,19 +47,41 @@ export default {
       userpass: null
     };
   },
-  methods: {
-    validate() {
+  computed: {
+    // for register component instead
+    available: function() {
       return (
-        this.userlogin.trim() == this.login &&
-        this.password.trim() == this.userpass
+        this.userlogin &&
+        this.names.find(name => this.userlogin.trim() === name.trim()) ===
+          undefined
       );
     },
-    Log() {
-      if (this.validate()) {
-        this.$store.commit("setLogged", true);
-        this.$router.push("/home");
-      }
+    /**
+     *    :state="valid"
+          invalid-feedback="Password must be atleast 5 characters long"
+          valid-feedback="Good"
+     */
+    valid: function() {
+      return this.userpass && this.userpass.length >= 5;
     }
+  },
+  methods: {
+    Log() {
+      this.$http
+        .post("/api/login", { name: this.userlogin, password: this.userpass })
+        .then(res => {
+          if (res.ok) {
+            this.$store.commit("setLogged", true);
+            this.$router.push("/");
+          }
+        })
+        .catch(error => {
+          // do something here
+        });
+    }
+  },
+  created() {
+    this.fetchNames();
   }
 };
 </script>

@@ -4,25 +4,29 @@
   >
     <b-form @submit.prevent="save" v-if="show" action="/categories" method="post">
       <h2 class="mb-3">Category</h2>
-      <b-form-input
-        id="name"
-        v-model="category.name"
-        :state="category.name.length > 0"
-        type="text"
-        placeholder="Category name"
-        class="my-2"
-        style="width: 400px; height: 40px;"
-        required
-      ></b-form-input>
 
-      <b-form-textarea
-        id="textarea"
-        v-model="category.desc"
-        :state="category.desc.length <= 1000"
-        placeholder="Category description"
-        rows="3"
-        max-rows="6"
-      ></b-form-textarea>
+      <b-form-group label="Name">
+        <b-form-input
+          id="name"
+          v-model="category.name"
+          :state="category.name.length > 0"
+          type="text"
+          placeholder="Category name"
+          class="my-2"
+          style="width: 400px; height: 40px;"
+          required
+        ></b-form-input>
+      </b-form-group>
+      <b-form-group label="Description">
+        <b-form-textarea
+          id="textarea"
+          v-model="category.desc"
+          :state="category.desc.length <= 1000"
+          placeholder="Category description"
+          rows="3"
+          max-rows="6"
+        ></b-form-textarea>
+      </b-form-group>
       <div class="d-flex justify-content-end mt-4 mb-5">
         <b-button type="submit" class="mr-2" variant="info" style="min-width:70px;">Save</b-button>
       </div>
@@ -43,8 +47,8 @@ export default {
       default: function() {
         return {
           id: null,
-          name: "",
-          desc: ""
+          name: null,
+          desc: null
         };
       }
     }

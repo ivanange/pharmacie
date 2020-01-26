@@ -6,7 +6,7 @@
           v-model="filters.name"
           class="form-control rounded"
           type="search"
-          placeholder="product name, articles"
+          placeholder="Product name"
           style="max-width: 600px;"
         />
         <b-button variant="light" class="ml-3" v-b-toggle.filters>Filters</b-button>
@@ -38,7 +38,8 @@
             <b-form-group label="Categories">
               <v-select
                 v-model="filters.category"
-                :options="categoryList.map(el => el.name)"
+                :options="categoryList.map(el => ({ label:el.name, value: el.id}))"
+                :reduce="el => el.value"
                 placeholder="Category"
                 class="custom"
               ></v-select>
@@ -62,12 +63,13 @@
 import { debounce } from "lodash";
 export default {
   name: "ProductSidebar",
+  props: ["categoryid"],
   data: function() {
     return {
       filters: {
         name: "",
         manufacturer: null,
-        category: null,
+        category: this.categoryid,
         status: []
       },
       result: []
@@ -99,6 +101,9 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    categoryid: function() {
+      this.filters.category = this.categoryid;
     }
   },
 
@@ -111,7 +116,7 @@ export default {
       let searchList =
         !this.filters.status.length || this.filters.status.length == 3
           ? this.productList
-          : [].concat(...this.filters.status.map(el => this[el + "Product"]));
+          : [].concat(...this.filters.status.map(el => this[el + "Products"]));
 
       return searchList.filter(
         product =>
@@ -128,11 +133,7 @@ export default {
                 .indexOf(this.filters.manufacturer.toLowerCase()) !== -1
             : true) &&
           (this.filters.category
-            ? product.category &&
-              product.category.name &&
-              product.category.name
-                .toLowerCase()
-                .indexOf(this.filters.category.toLowerCase()) !== -1
+            ? product.category && product.category.id == this.filters.category
             : true)
       );
     }

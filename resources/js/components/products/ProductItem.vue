@@ -3,7 +3,7 @@
     <b-card
       :title="this.product.name"
       class="shadow-sm h-100"
-      @click.stop.prevent="$router.push({ name:'ShowProduct', params: { propProduct: this.product, id: this.product.id } })"
+      @click.stop.prevent="$router.push({ name:'ShowProduct', params: { propProduct: product, id: product.id } })"
     >
       <b-card-sub-title class="my-2">
         <span
@@ -35,7 +35,7 @@
       </b-card-text>
       <div class="ml-auto w-100 d-flex justify-content-end">
         <b-button
-          :to="{ name:'EditProduct', params: { propProduct: this.product, id: this.product.id } }"
+          :to="{ name:'EditProduct', params: { propProduct: product, id: product.id } }"
           variant="info"
           class="mr-2"
           style="min-width:70px;"
@@ -70,7 +70,7 @@ export default {
     },
     weight: function() {
       let weight = this.product.weight;
-      return weight < 1000 ? weight + "g" : (weight / 2).toFixed(2) + "Kg";
+      return weight < 1000 ? weight + "g" : (weight / 1000).toFixed(2) + "Kg";
     },
     expireDate: function() {
       return this.setupDate(this.product.expireDate).toLocaleString(

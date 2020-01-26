@@ -14,41 +14,25 @@ use App\Command;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/home', function () {
-    return view('welcome');
-});
+
 
 Route::get('/login', function () {
     return view('welcome');
+})->name('login');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
+
+    Route::get('/home', function () {
+        return view('welcome');
+    });
+
+    Route::resources([
+        'categories' => 'CategoryController',
+        'products' => 'ProductController',
+        'commands' => 'CommandController',
+    ]);
 });
-
-Route::resources([
-    'categories' => 'CategoryController',
-    'products' => 'ProductController',
-    'commands' => 'CommandController',
-]);
-
-
-
-Route::get('/json', function () {
-    $data = Command::with('products')->get();
-    return $data->toJson();
-});
-
-/*
-Route::get('/test', function () {
-    $cat = new Category;
-    $cat2 = new Category;
-    $cat->fill(['name' => 'my cat', 'desc' => 'some description']);
-
-    $cat2->id = $cat->id;
-    $cat2->name = "cat2";
-    $cat2->save();
-});
-
-
-*/

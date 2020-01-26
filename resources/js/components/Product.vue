@@ -15,24 +15,20 @@ export default {
   components: {
     ProductList
   },
-    data: function() {
-      return {
-          title: "Products"
-      };
+  data: function() {
+    return {
+    };
   },
-  methods: {
-    updateSearchList() {
-      this.$store.commit("setList", this.productList);
-    }
-  },
-  created: function() {
-    this.updateSearchList();
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.updateSearchList();
-    });
-  }
+  beforeRouteUpdate(to, from, next) {
+      if(this.$route.query.category) {
+          this.$root.categoryid = this.$route.query.category;
+      }
+},
+created() {
+          if(this.$route.query.category) {
+          this.$root.categoryid = this.$route.query.category;
+      }
+}
 };
 </script>
 

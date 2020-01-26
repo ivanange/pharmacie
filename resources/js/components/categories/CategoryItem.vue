@@ -7,7 +7,14 @@
       <b-card-text class="h3 truncate" style="color: #023000;">{{this.category.name}}</b-card-text>
       <b-card-text class="my-3" :style="textstyle">{{this.category.desc}}</b-card-text>
 
-      <div class="ml-auto w-100 d-flex justify-content-end mt-3">
+      <div class="ml-auto w-100 d-flex justify-content-end mt-3" @click.stop>
+        <router-link
+          :to="{path: 'products', query:{ category: category.id} }"
+          class="text-decoration-none mr-auto text-muted"
+          style="text-decoration: none"
+          :id="category.id"
+          @click.stop
+        >Afficher les produits</router-link>
         <font-awesome-icon
           class="d-inline-block mr-4"
           icon="pencil-alt"

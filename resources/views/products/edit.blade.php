@@ -10,7 +10,7 @@
 <body style="width: 100vw; height:100vh">
     <div id="app"  class="custom-scroll w-100 h-100 d-flex flex-column overflow-auto" style="max-height: 100%;">
         <Navbar></Navbar>
-        <router-view name="sideBar" :list="searchResult"></router-view>
+        <router-view name="sideBar" :list="searchResult" :categoryid="categoryid"></router-view>
         <router-view>  </router-view>
     </div>
 

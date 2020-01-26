@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-card
+      :id="command.id"
       :title="this.command.name"
       class="shadow-sm h-100"
       @click.stop.prevent="$router.push({ name:'ShowCommand', params: { propCommand: command, id: command.id } })"

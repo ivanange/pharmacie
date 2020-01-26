@@ -43,12 +43,10 @@ export const state = {
     state: {
         lang: "en",
         currency: "XAF",
-        section: "Home",
-        login: "admin",
-        password: "admin",
-        logged: false,
         searchResult: [],
+        names: [],
         loaded: false,
+        logged: false,
         loadCounter: 0,
         expiryInterval: {
             days: 30
@@ -90,6 +88,12 @@ export const state = {
         getCategory: state => (id) => state.categories[id],
     },
     mutations: {
+        setLogged(state, logged) {
+            state.logged = logged;
+        },
+        setNames(state, names) {
+            state.names = names;
+        },
         changeLang(state, lang) {
             state.lang = lang;
         },
@@ -105,15 +109,6 @@ export const state = {
         },
         setList(state, searchResult) {
             state.searchResult = searchResult;
-        },
-        setPass(state, password) {
-            state.password = password;
-        },
-        setLogin(state, login) {
-            state.login = login;
-        },
-        setLogged(state, logged) {
-            state.logged = logged;
         },
         // Commands
 
@@ -172,6 +167,18 @@ export const state = {
     },
 
     actions: {
+
+        fetchNames(context) {
+            Vue.http.get('/api/names').then(res => {
+                if (res.ok) {
+                    context.commit("setNames", res.body);
+                } else {
+                    // manage small quirks auth, validation, etc
+                }
+            }).catch(error => {
+                // catch fatal errors
+            });
+        },
 
         // Commands
 
@@ -332,11 +339,9 @@ export const stateMap = {
     ...mapState([
         "lang",
         "loaded",
-        "currency",
-        "login",
-        "password",
         "logged",
-        "section",
+        "currency",
+        "names",
         "searchResult",
         "expiryInterval",
         "FRSTATUS",
@@ -380,6 +385,7 @@ export const stateMap = {
 }
 
 export const actions = mapActions([
+    "fetchNames",
 
     // Commands
 
