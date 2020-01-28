@@ -27,15 +27,25 @@
           </div>
         </ArticleWrapper>
       </div>
-      <b-card-text class="my-1">
+      <b-card-text class="mb-1">
         <span
+          :id="'no-print-color'+command.id"
           class="d-inline-block ml-2"
           style=" height:10px; width:10px; border-radius: 50%; box-shadow: 0px 0px 3px 1px; position:relative; bottom:-1px;"
           :style="{color: this.status.color, backgroundColor: this.status.color}"
         ></span>
         <small class="text-muted">{{status.text}}</small>
       </b-card-text>
-      <div class="ml-auto w-100 d-flex justify-content-end">
+      <div
+        class="ml-auto w-100 d-flex justify-content-end d-print-none mb-0"
+        :id="'no-print'+command.id"
+      >
+        <font-awesome-icon
+          class="d-inline-block mr-auto mt-3 text-secondary"
+          style="cursor:pointer;"
+          icon="print"
+          @click.stop="print"
+        />
         <b-button
           :to="{ name:'EditCommand', params: { propCommand: this.command, id: this.command.id } }"
           variant="info"
@@ -53,6 +63,7 @@
 import Article from "./Article";
 import ArticleWrapper from "./ArticleWrapper";
 import { DateTime } from "luxon";
+import PrinJS from "print-js";
 export default {
   name: "CommandItem",
   components: {
@@ -115,6 +126,22 @@ export default {
   methods: {
     notify() {
       this.$emit("confirm", this.command.id);
+    },
+    print() {
+      printJS({
+        printable: this.command.id,
+        type: "html",
+        header: "PHARMA",
+        headerStyle:
+          "font-weight: 500; font-size: 24px; padding-bottom: 0px; margin-bottom: 7px; text-align: center;",
+        scanStyles: true,
+        targetStyles: ["*"],
+        ignoreElements: [
+          "no-print" + this.command.id,
+          "no-print-color" + this.command.id
+        ],
+        documentTitle: "Command_" + this.command.id + "_" + Date().toString()
+      });
     }
   }
 };

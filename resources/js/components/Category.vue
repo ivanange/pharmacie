@@ -1,8 +1,16 @@
 
 <template>
   <div>
-    <CategoryList :proplist="searchResult" />
+    <CategoryList :proplist="searchResult" ref="category" />
     <router-view></router-view>
+    <font-awesome-icon
+      icon="chevron-up"
+      class="p-3 text-dark position-fixed"
+      style="bottom: 50px; left: 50px; border-radius: 50%;"
+      @click.stop="scrollToTop()"
+      size="lg"
+      v-if="show"
+    ></font-awesome-icon>
   </div>
 </template>
 
@@ -17,21 +25,14 @@ export default {
   },
   data: function() {
     return {
+        show: false,
     };
   },
-  methods: {
-    updateSearchList() {
-      this.$store.commit("setList", this.categoryList);
-    }
+
+  mounted: function() {
+    this.show = this.$el.clientHeight > 1.5 * window.innerHeight;
   },
-  created: function() {
-    this.updateSearchList();
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.updateSearchList();
-    });
-  }
+
 };
 </script>
 

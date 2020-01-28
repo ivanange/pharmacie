@@ -7,13 +7,7 @@
         <b-nav-item :to="'/home'">Home</b-nav-item>
         <b-nav-item :to="'/categories'">Categories</b-nav-item>
         <b-nav-item :to="'/commands'">Commands</b-nav-item>
-        <b-nav-item-dropdown
-          text="Products"
-          right
-          v-if="categoryList.length"
-          class="custom-scroll overflow-auto"
-          style="max-height: 40vh;"
-        >
+        <b-nav-item-dropdown text="Products" v-if="categoryList.length">
           <b-dropdown-item :to="'/products'">All</b-dropdown-item>
           <b-dropdown-item
             v-for="category in categoryList"
@@ -29,6 +23,7 @@
 
 <script>
 export default {
+  //style="max-height: 40vh;" class="custom-scroll overflow-auto"
   name: "Navbar"
 };
 </script>

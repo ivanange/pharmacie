@@ -82,6 +82,7 @@ export default {
   },
   created() {
     this.fetchNames();
+    his.$store.commit("setLogged", false);
   }
 };
 </script>

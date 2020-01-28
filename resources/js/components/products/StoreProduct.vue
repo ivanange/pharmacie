@@ -116,12 +116,14 @@ export default {
       this.$emit("saved");
     },
     serialize() {
-      return {
+      console.log(this.product.image);
+      let data = {
         ...this.product,
         image: this.product.image
-          ? new FileReader().readAsDataURL(this.product.image)
+          ? new FileReader().readAsDataURL(this.product.image[0])
           : null
       };
+      return data;
     },
     setupDates() {
       if (this.edit) {

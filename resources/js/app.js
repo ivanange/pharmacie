@@ -18,7 +18,9 @@ import {
 import {
     faMinusCircle,
     faPlusCircle,
-    faPencilAlt
+    faPencilAlt,
+    faChevronUp,
+    faPrint
 } from '@fortawesome/free-solid-svg-icons';
 import {
     faTrashAlt
@@ -45,9 +47,11 @@ import Navbar from "./components/Navbar";
 
 library.add(
     faMinusCircle,
+    faPrint,
     faPlusCircle,
     faTrashAlt,
-    faPencilAlt
+    faPencilAlt,
+    faChevronUp
 );
 
 // setup global config
@@ -102,6 +106,13 @@ Vue.mixin({
                     zone: "UTC"
                 }
             );
+        },
+        scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
         }
     },
 

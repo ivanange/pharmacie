@@ -27,18 +27,12 @@ export const routes = [{
         },
     },
     {
-        path: '/home',
-        name: 'Home',
-        components: {
-            default: Home,
-        },
-    },
-    {
         path: '/',
         name: 'Home',
         components: {
             default: Home,
         },
+        alias: '/home',
     },
     {
         path: '/commands',

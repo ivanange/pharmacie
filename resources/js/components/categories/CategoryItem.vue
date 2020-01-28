@@ -19,6 +19,7 @@
           class="d-inline-block mr-4"
           icon="pencil-alt"
           size="lg"
+          style="cursor:pointer;"
           @click.stop="$router.push({ name:'EditCategory', params: { propCategory: category, id: category.id } })"
         />
 
@@ -26,6 +27,7 @@
           class="d-inline-block mr-0"
           :icon="['far', 'trash-alt']"
           size="lg"
+          style="cursor:pointer;"
           @click.stop="$emit('confirm', category.id)"
         />
       </div>

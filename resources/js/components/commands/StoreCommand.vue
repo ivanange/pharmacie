@@ -3,6 +3,7 @@
     class="main-container d-flex justify-content-center align-items-center flex-column custom-scroll"
   >
     <b-form @submit.prevent="save" v-if="show" action="/commands" method="post">
+      <h2 class="mb-3">Command</h2>
       <b-form-input
         id="name"
         v-model="command.name"
@@ -13,30 +14,37 @@
       ></b-form-input>
 
       <div class="d-flex">
-        <datetime
-          id="issueDate"
-          type="datetime"
-          v-model="issueDateF"
-          title="Issue date"
-          placeholder="Issue date"
-          readonly
-          input-class="border rounded my-2 mr-3 pl-1"
-          input-style="width: 200px; height: 40px;"
-        ></datetime>
-        <datetime
-          id="deliveryDate"
-          type="datetime"
-          v-model="command.deliveryDate"
-          title="Delivery date"
-          placeholder="Delivery date"
+        <b-form-group label="Issue date" label-class="mb-0">
+          <datetime
+            id="issueDate"
+            type="datetime"
+            v-model="issueDateF"
+            title="Issue date"
+            placeholder="Issue date"
+            readonly
+            input-class="border rounded my-2 mr-3 pl-1"
+            input-style="width: 200px; height: 40px;"
+          ></datetime>
+        </b-form-group>
+        <b-form-group
+          label="Delivery date"
+          label-class="mb-0"
           v-if="command.status != this.ENSTATUS.ONGOING"
-          input-class="border rounded my-2  pl-2"
-          input-style="width: 200px; height: 40px;"
-          :required="command.status != this.ENSTATUS.ONGOING"
-        ></datetime>
+        >
+          <datetime
+            id="deliveryDate"
+            type="datetime"
+            v-model="command.deliveryDate"
+            title="Delivery date"
+            placeholder="Delivery date"
+            input-class="border rounded my-2  pl-2"
+            input-style="width: 200px; height: 40px;"
+            :required="command.status != this.ENSTATUS.ONGOING"
+          ></datetime>
+        </b-form-group>
       </div>
 
-      <b-form-group class="my-4" label-class="font-weight-bold text-secondary">
+      <b-form-group class="mb-4 mt-2" label-class="font-weight-bold text-secondary">
         <label class="font-weight-bold text-secondary">
           <h5 class="mb-0">Status</h5>
         </label>
@@ -54,7 +62,7 @@
             <h5 class="mb-0">Articles</h5>
           </label>
           <ArticleWrapper :total="total">
-            <div class="custom-scroll overflow-auto" style="max-height: calc(100vh - 600px);">
+            <div class="custom-scroll overflow-auto" style="max-height: calc(100vh - 650px);">
               <Article
                 v-for="article in Object.values(this.command.articles)"
                 :article="article"
@@ -93,7 +101,7 @@
         </b-input-group-append>
       </b-input-group>
 
-      <div class="d-flex justify-content-end mt-4 mb-5">
+      <div class="d-flex justify-content-end mt-4 mb-1">
         <b-button type="submit" class="mr-2" variant="info" style="min-width:70px;">Save</b-button>
       </div>
     </b-form>

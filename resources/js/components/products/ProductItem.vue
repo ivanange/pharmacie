@@ -35,7 +35,7 @@
       </b-card-text>
       <div class="ml-auto w-100 d-flex justify-content-end">
         <b-button
-          :to="{ name:'EditProduct', params: { propProduct: product, id: product.id } }"
+          :to="{ name:'EditProduct', params: { propProduct: this.product, id: this.product.id } }"
           variant="info"
           class="mr-2"
           style="min-width:70px;"

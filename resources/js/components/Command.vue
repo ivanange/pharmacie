@@ -3,6 +3,14 @@
   <div>
     <CommandList :proplist="searchResult" />
     <router-view></router-view>
+    <font-awesome-icon
+      icon="chevron-up"
+      class="p-3 text-dark position-fixed"
+      style="bottom: 50px; left: 50px; border-radius: 50%;"
+      @click.stop="scrollToTop()"
+      size="lg"
+      v-if="show"
+    ></font-awesome-icon>
   </div>
 </template>
 
@@ -17,20 +25,15 @@ export default {
   },
   data: function() {
     return {
+      show: false
     };
   },
-  methods: {
-    updateSearchList() {
-      this.$store.commit("setList", this.commandList);
-    }
+
+  mounted: function() {
+    this.show = this.$el.clientHeight > 1.5 * window.innerHeight;
   },
-  created: function() {
-    this.updateSearchList();
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.updateSearchList();
-    });
+  updated() {
+    this.show = this.$el.clientHeight > 1.5 * window.innerHeight;
   }
 };
 </script>
